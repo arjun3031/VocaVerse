@@ -1,6 +1,6 @@
-# Word Chain Game: Interactive Two-Player Indian Names Challenge
+# VocaVerse(Word chain game): Interactive Two-Player Indian Names Challenge
 
-![Game Screenshot](./screenshots/game_screenshot.png)
+![Game Screenshot](./S1.png)
 
 ## 📖 Project Overview
 **Word Chain Game** is a culturally enriching, web-based word game that combines the fun of a traditional word chain with educational content focused on Indian names. This multiplayer game is designed to be engaging, responsive, and educational, showcasing modern web development practices.
