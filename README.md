@@ -96,7 +96,7 @@ Develop a sophisticated, responsive web application that blends traditional word
 - ✅ Session-based game state persistence.
 - ✅ Responsive and dynamic UI design.
 
-![Gameplay Screenshot](./screenshots/gameplay.png)
+![Gameplay Screenshot](./S2.png)
 
 ---
 
