@@ -1,0 +1,1158 @@
+﻿@page
+@model NewsModel
+@{
+    Layout = null;
+    ViewData["Title"] = "News - VocaVerse";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --accent-color: #06b6d4;
+            --text-primary: #ffffff;
+            --text-secondary: #cbd5e1;
+            --bg-card: rgba(30, 41, 59, 0.8);
+            --bg-overlay: rgba(15, 23, 42, 0.9);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+            /* Animated Background */
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: radial-gradient(circle at 20% 20%, rgba(120, 119, 198, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 119, 198, 0.3) 0%, transparent 50%), radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+                animation: backgroundShift 15s ease-in-out infinite;
+                z-index: -2;
+            }
+
+        @@keyframes backgroundShift {
+            0%, 100%
+
+        {
+            transform: scale(1) rotate(0deg);
+        }
+
+        50% {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        }
+
+        /* Floating elements */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .floating-word {
+            position: absolute;
+            font-size: clamp(2rem, 4vw, 4rem);
+            font-weight: 700;
+            opacity: 0.1;
+            color: var(--text-primary);
+            animation: float 20s linear infinite;
+            text-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+        }
+
+        @@keyframes float {
+            0%
+
+        {
+            transform: translateY(100vh) rotate(0deg);
+            opacity: 0;
+        }
+
+        10% {
+            opacity: 0.1;
+        }
+
+        90% {
+            opacity: 0.1;
+        }
+
+        100% {
+            transform: translateY(-10vh) rotate(360deg);
+            opacity: 0;
+        }
+
+        }
+
+        /* Navigation */
+        .navbar {
+            background: var(--bg-overlay) !important;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary) !important;
+            text-decoration: none;
+        }
+
+        .navbar-nav .nav-link {
+            color: var(--text-secondary) !important;
+            font-weight: 500;
+            margin: 0 0.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+            .navbar-nav .nav-link:hover,
+            .navbar-nav .nav-link.active {
+                color: var(--primary-color) !important;
+                transform: translateY(-2px);
+            }
+
+            .navbar-nav .nav-link::after {
+                content: '';
+                position: absolute;
+                bottom: -5px;
+                left: 50%;
+                width: 0;
+                height: 2px;
+                background: var(--primary-color);
+                transition: all 0.3s ease;
+                transform: translateX(-50%);
+            }
+
+            .navbar-nav .nav-link:hover::after,
+            .navbar-nav .nav-link.active::after {
+                width: 100%;
+            }
+
+        /* Main Content */
+        .main-container {
+            min-height: calc(100vh - 100px);
+            padding: 2rem 0;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            text-align: center;
+            padding: 4rem 0;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @@keyframes titleGlow {
+            0%
+
+        {
+            filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.5));
+        }
+
+        100% {
+            filter: drop-shadow(0 0 30px rgba(139, 92, 246, 0.8));
+        }
+
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+
+        /* News Cards */
+        .news-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .news-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+                transition: left 0.5s ease;
+            }
+
+            .news-card:hover {
+                transform: translateY(-10px);
+                border-color: var(--primary-color);
+                box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+            }
+
+                .news-card:hover::before {
+                    left: 100%;
+                }
+
+        .news-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .badge-upcoming {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .badge-development {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+        }
+
+        .badge-feature {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .badge-update {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        .news-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .news-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .news-content {
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .news-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+            .feature-list li {
+                padding: 0.5rem 0;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+                .feature-list li::before {
+                    content: '✨';
+                    font-size: 1.2rem;
+                }
+
+        /* Buttons */
+        .btn-custom {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+        }
+
+        .btn-outline-custom {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Progress Bars */
+        .progress-custom {
+            height: 8px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .progress-bar-custom {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            transition: width 1s ease-in-out;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+            .timeline::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 2px;
+                background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+            }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+            .timeline-item::before {
+                content: '';
+                position: absolute;
+                left: -2rem;
+                top: 0.5rem;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: var(--primary-color);
+                border: 3px solid var(--bg-card);
+            }
+
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem;
+            background: var(--bg-overlay);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+            footer a {
+                color: var(--text-secondary);
+                transition: all 0.3s ease;
+                padding: 0.5rem;
+                border-radius: 10px;
+            }
+
+                footer a:hover {
+                    color: var(--primary-color);
+                    transform: translateY(-3px) scale(1.2);
+                    background: rgba(99, 102, 241, 0.1);
+                }
+
+
+        /* Responsive Design */
+        @@media (max-width: 768px) {
+            .hero-title
+
+        {
+            font-size: 3rem;
+        }
+
+        .news-card {
+            padding: 1.5rem;
+        }
+
+        .news-meta {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        }
+
+        /* Animation for cards on scroll */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+            .fade-in.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        footer {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+    </style>
+</head>
+
+<body>
+    <!-- Floating Background Elements -->
+    <div class="floating-elements">
+        <div class="floating-word" style="left: 10%; animation-delay: 0s;">VOCA</div>
+        <div class="floating-word" style="left: 70%; animation-delay: 5s;">VERSE</div>
+        <div class="floating-word" style="left: 30%; animation-delay: 10s;">NAMES</div>
+        <div class="floating-word" style="left: 80%; animation-delay: 15s;">PLAY</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                <div class="logo-icon">🌌</div>
+                <span>VocaVerse</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link fade-in" href="/Index" style="animation-delay: 0.1s">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/news">
+                            <i class="fas fa-newspaper me-1"></i>News
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fade-in" href="/Game" style="animation-delay: 0.3s">
+                            <i class="fas fa-gamepad me-1"></i>Game
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/support">
+                            <i class="fas fa-headset me-1"></i>Support
+                        </a>
+                    </li>
+                  
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="container">
+            <!-- Hero Section -->
+            <div class="hero-section">
+                <h1 class="hero-title">Latest News</h1>
+                <p class="hero-subtitle">Stay updated with the latest features and developments in VocaVerse</p>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Major Update News -->
+                    <article class="news-card fade-in">
+                        <span class="news-badge badge-upcoming">Upcoming Feature</span>
+                        <h2 class="news-title">AI-Powered Smart Opponent Coming Soon!</h2>
+                        <div class="news-meta">
+                            <span><i class="fas fa-calendar-alt me-1"></i>December 15, 2024</span>
+                            <span><i class="fas fa-user me-1"></i>Development Team</span>
+                            <span><i class="fas fa-tags me-1"></i>AI, Gameplay</span>
+                        </div>
+                        <img src="/images/VocaVerse1.png" alt="AI Opponent" class="news-image">
+                        <div class="news-content">
+                            <p>Get ready for the most exciting update yet! We're introducing an AI-powered opponent that will challenge players of all skill levels. This intelligent system learns from your gameplay patterns and adapts its difficulty accordingly.</p>
+
+                            <h5 class="mt-4 mb-3">Key Features:</h5>
+                            <ul class="feature-list">
+                                <li>Adaptive difficulty based on player performance</li>
+                                <li>Machine learning algorithms for intelligent name selection</li>
+                                <li>Personalized hints and cultural context</li>
+                                <li>Voice recognition for hands-free gameplay</li>
+                                <li>Multiple AI personality modes</li>
+                            </ul>
+
+                            <h5 class="mt-4 mb-3">Development Progress:</h5>
+                            <div class="mb-2">AI Algorithm Development</div>
+                            <div class="progress-custom mb-3">
+                                <div class="progress-bar-custom" style="width: 85%"></div>
+                            </div>
+
+                            <div class="mb-2">Voice Recognition Integration</div>
+                            <div class="progress-custom mb-3">
+                                <div class="progress-bar-custom" style="width: 60%"></div>
+                            </div>
+
+                            <div class="mb-2">UI/UX Design</div>
+                            <div class="progress-custom mb-4">
+                                <div class="progress-bar-custom" style="width: 90%"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-3">
+                            <a href="#" class="btn-custom btn-primary-custom">
+                                <i class="fas fa-bell me-1"></i>Get Notified
+                            </a>
+                            <a href="#" class="btn-custom btn-outline-custom">
+                                <i class="fas fa-code me-1"></i>View Development
+                            </a>
+                        </div>
+                    </article>
+
+                    <!-- Database Expansion News -->
+                    <article class="news-card fade-in">
+                        <span class="news-badge badge-feature">New Feature</span>
+                        <h2 class="news-title">Massive Name Database Expansion - 500+ New Names!</h2>
+                        <div class="news-meta">
+                            <span><i class="fas fa-calendar-alt me-1"></i>November 28, 2024</span>
+                            <span><i class="fas fa-user me-1"></i>Content Team</span>
+                            <span><i class="fas fa-tags me-1"></i>Database, Content</span>
+                        </div>
+                        <img src="/images/VocaVerse2.png" alt="AI Opponent" class="news-image">
+                        <div class="news-content">
+                            <p>We've significantly expanded our Indian names database! The new update includes over 500 carefully curated authentic Indian names from various regions and cultures, making the game more diverse and challenging.</p>
+
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <h6>Regional Coverage:</h6>
+                                    <ul class="feature-list">
+                                        <li>North Indian names (150+)</li>
+                                        <li>South Indian names (180+)</li>
+                                        <li>Eastern region names (90+)</li>
+                                        <li>Western region names (80+)</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Name Categories:</h6>
+                                    <ul class="feature-list">
+                                        <li>Traditional names</li>
+                                        <li>Modern variations</li>
+                                        <li>Cultural significance</li>
+                                        <li>Regional specialties</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#" class="btn-custom btn-primary-custom">
+                            <i class="fas fa-database me-1"></i>Explore New Names
+                        </a>
+                    </article>
+
+                    <!-- Tournament Feature News -->
+                    <article class="news-card fade-in">
+                        <span class="news-badge badge-development">In Development</span>
+                        <h2 class="news-title">Tournament Mode & Leaderboards System</h2>
+                        <div class="news-meta">
+                            <span><i class="fas fa-calendar-alt me-1"></i>November 20, 2024</span>
+                            <span><i class="fas fa-user me-1"></i>Game Design Team</span>
+                            <span><i class="fas fa-tags me-1"></i>Multiplayer, Competition</span>
+                        </div>
+                        <img src="/images/VocaVerse3.png" alt="AI Opponent" class="news-image">
+                        <div class="news-content">
+                            <p>Competitive players, rejoice! We're developing a comprehensive tournament system that will allow players to compete in organized competitions with rankings, rewards, and seasonal challenges.</p>
+
+                            <div class="timeline mt-4">
+                                <div class="timeline-item">
+                                    <h6>Phase 1: Basic Tournament Structure</h6>
+                                    <p>Single-elimination and round-robin formats with automated matchmaking.</p>
+                                </div>
+                                <div class="timeline-item">
+                                    <h6>Phase 2: Leaderboard Integration</h6>
+                                    <p>Global and regional leaderboards with ELO rating system.</p>
+                                </div>
+                                <div class="timeline-item">
+                                    <h6>Phase 3: Rewards & Achievements</h6>
+                                    <p>Unlock badges, titles, and special privileges through competitive play.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-3">
+                            <a href="#" class="btn-custom btn-primary-custom">
+                                <i class="fas fa-trophy me-1"></i>Join Beta Test
+                            </a>
+                            <a href="#" class="btn-custom btn-outline-custom">
+                                <i class="fas fa-info-circle me-1"></i>Learn More
+                            </a>
+                        </div>
+                    </article>
+
+                    <!-- Mobile App News -->
+                    <article class="news-card fade-in">
+                        <span class="news-badge badge-upcoming">Coming Soon</span>
+                        <h2 class="news-title">VocaVerse Mobile App - Play Anywhere, Anytime</h2>
+                        <div class="news-meta">
+                            <span><i class="fas fa-calendar-alt me-1"></i>November 10, 2024</span>
+                            <span><i class="fas fa-user me-1"></i>Mobile Development Team</span>
+                            <span><i class="fas fa-tags me-1"></i>Mobile, Cross-platform</span>
+                        </div>
+                        <img src="/images/VocaVerse4.png" alt="AI Opponent" class="news-image">
+                        <div class="news-content">
+                            <p>Take VocaVerse with you wherever you go! Our mobile application is currently in development for both iOS and Android platforms, featuring offline play capabilities and seamless cross-platform synchronization.</p>
+
+                            <div class="alert alert-info mt-3" style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.3); color: var(--text-primary);">
+                                <i class="fas fa-mobile-alt me-2"></i>
+                                <strong>Pre-registration is now open!</strong> Be among the first to download when we launch.
+                            </div>
+                        </div>
+                        <div class="d-flex gap-3">
+                            <a href="#" class="btn-custom btn-primary-custom">
+                                <i class="fab fa-google-play me-1"></i>Pre-register
+                            </a>
+                            <a href="#" class="btn-custom btn-outline-custom">
+                                <i class="fab fa-apple me-1"></i>iOS Waitlist
+                            </a>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <div class="sticky-top" style="top: 120px;">
+                        <!-- Quick Links -->
+                        <div class="news-card">
+                            <h5 class="mb-3">
+                                <i class="fas fa-link me-2"></i>Quick Links
+                            </h5>
+                            <div class="d-grid gap-2">
+                                <a href="/changelog" class="btn btn-outline-light">
+                                    <i class="fas fa-list-ul me-2"></i>Full Changelog
+                                </a>
+                                <a href="/roadmap" class="btn btn-outline-light">
+                                    <i class="fas fa-map me-2"></i>Development Roadmap
+                                </a>
+                                <a href="/feedback" class="btn btn-outline-light">
+                                    <i class="fas fa-comment-alt me-2"></i>Send Feedback
+                                </a>
+                                <a href="/discord" class="btn btn-outline-light">
+                                    <i class="fab fa-discord me-2"></i>Join Discord
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Development Stats -->
+                        <div class="news-card">
+                            <h5 class="mb-3">
+                                <i class="fas fa-chart-line me-2"></i>Development Stats
+                            </h5>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Phase 2 Progress</span>
+                                    <span>78%</span>
+                                </div>
+                                <div class="progress-custom">
+                                    <div class="progress-bar-custom" style="width: 78%"></div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>AI Integration</span>
+                                    <span>65%</span>
+                                </div>
+                                <div class="progress-custom">
+                                    <div class="progress-bar-custom" style="width: 65%"></div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Mobile App</span>
+                                    <span>45%</span>
+                                </div>
+                                <div class="progress-custom">
+                                    <div class="progress-bar-custom" style="width: 45%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Community -->
+                        <div class="news-card">
+                            <h5 class="mb-3">
+                                <i class="fas fa-users me-2"></i>Community
+                            </h5>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <h3 class="text-primary">2.5K+</h3>
+                                    <small>Active Players</small>
+                                </div>
+                                <div class="col-6">
+                                    <h3 class="text-success">450+</h3>
+                                    <small>Games Today</small>
+                                </div>
+                            </div>
+                            <hr class="my-3" style="border-color: rgba(255,255,255,0.1);">
+                            <div class="d-flex justify-content-center gap-3">
+                                <a href="#" class="text-decoration-none">
+                                    <i class="fab fa-twitter fa-lg" style="color: #1da1f2;"></i>
+                                </a>
+                                <a href="#" class="text-decoration-none">
+                                    <i class="fab fa-discord fa-lg" style="color: #7289da;"></i>
+                                </a>
+                                <a href="#" class="text-decoration-none">
+                                    <i class="fab fa-reddit fa-lg" style="color: #ff4500;"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="fade-in">
+        <span>© 2025 VocaVerse | All Rights Reserved</span>
+        <div class="d-flex gap-3">
+            <a href="https://www.instagram.com/yourprofile" target="_blank" title="Instagram">
+                <i class="fab fa-instagram fs-4"></i>
+            </a>
+            <a href="https://www.linkedin.com/in/yourprofile" target="_blank" title="LinkedIn">
+                <i class="fab fa-linkedin fs-4"></i>
+            </a>
+            <a href="https://github.com/yourprofile" target="_blank" title="GitHub">
+                <i class="fab fa-github fs-4"></i>
+            </a>
+            <a href="#" target="_blank" title="Discord">
+                <i class="fab fa-discord fs-4"></i>
+            </a>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // Fade in animation on scroll
+        function handleScrollAnimation() {
+            const elements = document.querySelectorAll('.fade-in');
+            const windowHeight = window.innerHeight;
+
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+
+                if (elementTop < windowHeight - 100) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        // Progress bar animation
+        function animateProgressBars() {
+            const progressBars = document.querySelectorAll('.progress-bar-custom');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 500);
+            });
+        }
+
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initial fade-in check
+            handleScrollAnimation();
+
+            // Animate progress bars after page load
+            setTimeout(animateProgressBars, 1000);
+
+            // Add scroll event listener
+            window.addEventListener('scroll', handleScrollAnimation);
+
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Add hover effects to news cards
+            const newsCards = document.querySelectorAll('.news-card');
+            newsCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-10px) scale(1.02)';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+
+            // Dynamic typing effect for hero subtitle
+            const subtitle = document.querySelector('.hero-subtitle');
+            if (subtitle) {
+                const originalText = subtitle.textContent;
+                subtitle.textContent = '';
+                let i = 0;
+
+                function typeWriter() {
+                    if (i < originalText.length) {
+                        subtitle.textContent += originalText.charAt(i);
+                        i++;
+                        setTimeout(typeWriter, 50);
+                    }
+                }
+
+                setTimeout(typeWriter, 1000);
+            }
+
+            // Add click animations to buttons
+            document.querySelectorAll('.btn-custom').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    // Create ripple effect
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+
+                    ripple.style.position = 'absolute';
+                    ripple.style.width = size + 'px';
+                    ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.style.background = 'rgba(255, 255, 255, 0.3)';
+                    ripple.style.borderRadius = '50%';
+                    ripple.style.transform = 'scale(0)';
+                    ripple.style.animation = 'ripple 0.6s linear';
+                    ripple.style.pointerEvents = 'none';
+
+                    this.style.position = 'relative';
+                    this.style.overflow = 'hidden';
+                    this.appendChild(ripple);
+
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+
+            // Notification system for "Get Notified" buttons
+            document.querySelectorAll('.btn-custom').forEach(button => {
+                if (button.textContent.includes('Get Notified') || button.textContent.includes('Pre-register')) {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+
+                        // Show success message
+                        const toast = document.createElement('div');
+                        toast.className = 'position-fixed top-0 end-0 p-3';
+                        toast.style.zIndex = '9999';
+                        toast.innerHTML = `
+                            <div class="toast show" role="alert" style="background: var(--bg-card); border: 1px solid var(--primary-color); color: var(--text-primary);">
+                                <div class="toast-header" style="background: var(--primary-color); color: white; border: none;">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <strong class="me-auto">Success!</strong>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                                </div>
+                                <div class="toast-body">
+                                    You'll be notified when this feature becomes available!
+                                </div>
+                            </div>
+                        `;
+
+                        document.body.appendChild(toast);
+
+                        // Auto remove after 5 seconds
+                        setTimeout(() => {
+                            toast.remove();
+                        }, 5000);
+
+                        // Change button text temporarily
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '<i class="fas fa-check me-1"></i>Subscribed!';
+                        this.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                            this.style.background = '';
+                        }, 3000);
+                    });
+                }
+            });
+
+            // Parallax effect for floating elements
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                const rate = scrolled * -0.5;
+
+                document.querySelectorAll('.floating-word').forEach((element, index) => {
+                    const speed = 0.1 + (index * 0.05);
+                    element.style.transform = `translateY(${rate * speed}px)`;
+                });
+            });
+
+            // Add intersection observer for better performance
+            if ('IntersectionObserver' in window) {
+                const observerOptions = {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -100px 0px'
+                };
+
+                const observer = new IntersectionObserver(function(entries) {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                        }
+                    });
+                }, observerOptions);
+
+                document.querySelectorAll('.fade-in').forEach(element => {
+                    observer.observe(element);
+                });
+            }
+        });
+
+        // CSS for ripple animation
+        const rippleCSS = `
+        @@keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+
+        const style = document.createElement('style');
+        style.textContent = rippleCSS;
+        document.head.appendChild(style);
+
+        // Add some interactive features
+        function createParticles() {
+            const canvas = document.createElement('canvas');
+            canvas.style.position = 'fixed';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.pointerEvents = 'none';
+            canvas.style.zIndex = '-1';
+            document.body.appendChild(canvas);
+
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = (Math.random() - 0.5) * 0.5;
+                    this.size = Math.random() * 2 + 1;
+                    this.opacity = Math.random() * 0.3 + 0.1;
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    if (this.x < 0) this.x = canvas.width;
+                    if (this.x > canvas.width) this.x = 0;
+                    if (this.y < 0) this.y = canvas.height;
+                    if (this.y > canvas.height) this.y = 0;
+                }
+
+                draw() {
+                    ctx.save();
+                    ctx.globalAlpha = this.opacity;
+                    ctx.fillStyle = '#6366f1';
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            // Create particles
+            for (let i = 0; i < 50; i++) {
+                particles.push(new Particle());
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+
+        // Initialize particles after a delay
+        setTimeout(createParticles, 2000);
+    </script>
+
+    <!-- Additional CSS for enhanced animations -->
+    <style>
+        /* Toast notifications */
+        .toast {
+            backdrop-filter: blur(20px);
+        }
+
+        /* Enhanced button hover effects */
+        .btn-custom:hover {
+            box-shadow: 0 15px 35px rgba(99, 102, 241, 0.4);
+            transform: translateY(-5px) scale(1.05);
+        }
+
+        .btn-custom:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        /* Glowing effect for active elements */
+        .news-card:hover .news-title {
+            text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+        }
+
+        /* Progress bar glow */
+        .progress-bar-custom {
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
+        }
+
+        /* Timeline enhancements */
+        .timeline-item:hover::before {
+            transform: scale(1.5);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        /* Navbar enhancement */
+        .navbar {
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Image hover effects */
+        .news-image {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+            .news-image:hover {
+                transform: scale(1.05);
+                border-radius: 10px;
+                box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+            }
+
+        /* Alert enhancements */
+        .alert {
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+        }
+
+        /* Responsive improvements */
+        @@media (max-width: 576px) {
+            .btn-custom
+
+        {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .d-flex.gap-3 {
+            flex-direction: column;
+        }
+
+        .floating-elements {
+            display: none;
+        }
+
+        }
+
+        /* Loading animation */
+        .fade-in:not(.visible) {
+            filter: blur(2px);
+        }
+
+        .fade-in.visible {
+            filter: blur(0);
+        }
+    </style>
+</body>
+</html>

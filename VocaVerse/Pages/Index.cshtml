@@ -1,0 +1,805 @@
+﻿
+@page
+@model IndexModel
+@{
+    Layout = null;
+    ViewData["Title"] = "VocaVerse";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VocaVerse - The Universe of Words</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Font Awesome for enhanced icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --accent-color: #06b6d4;
+            --text-primary: #ffffff;
+            --text-secondary: #cbd5e1;
+            --bg-card: rgba(30, 41, 59, 0.8);
+            --bg-overlay: rgba(15, 23, 42, 0.9);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+            /* Animated Background */
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: radial-gradient(circle at 20% 20%, rgba(120, 119, 198, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 119, 198, 0.3) 0%, transparent 50%), radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+                animation: backgroundShift 15s ease-in-out infinite;
+                z-index: -2;
+            }
+
+        @@keyframes backgroundShift {
+            0%, 100%
+
+        {
+            transform: scale(1) rotate(0deg);
+        }
+
+        50% {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        }
+
+        /* Floating elements */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .floating-word {
+            position: absolute;
+            font-size: clamp(2rem, 4vw, 4rem);
+            font-weight: 700;
+            opacity: 0.1;
+            color: var(--text-primary);
+            animation: float 20s linear infinite;
+            text-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+        }
+
+        @@keyframes float {
+            0%
+
+        {
+            transform: translateY(100vh) rotate(0deg);
+            opacity: 0;
+        }
+
+        10% {
+            opacity: 0.1;
+        }
+
+        90% {
+            opacity: 0.1;
+        }
+
+        100% {
+            transform: translateY(-10vh) rotate(360deg);
+            opacity: 0;
+        }
+
+        }
+
+        /* Enhanced Navigation Styles */
+        .navbar {
+            background: var(--bg-overlay) !important;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+            .navbar.scrolled {
+                padding: 0.5rem 0;
+                background: rgba(15, 23, 42, 0.95) !important;
+            }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary) !important;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+            .navbar-brand:hover {
+                transform: scale(1.05);
+                text-shadow: 0 0 20px rgba(99, 102, 241, 0.6);
+            }
+
+        .logo-icon {
+            font-size: 2rem;
+            animation: logoSpin 10s linear infinite;
+            filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
+        }
+
+        @@keyframes logoSpin {
+            0%
+
+        {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+
+        }
+
+        .navbar-nav {
+            align-items: center;
+        }
+
+            .navbar-nav .nav-link {
+                color: var(--text-secondary) !important;
+                font-weight: 500;
+                margin: 0 0.8rem;
+                transition: all 0.3s ease;
+                position: relative;
+                padding: 0.5rem 1rem;
+                border-radius: 25px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                font-size: 0.9rem;
+            }
+
+                .navbar-nav .nav-link:hover,
+                .navbar-nav .nav-link.active {
+                    color: var(--primary-color) !important;
+/*                     transform: translateY(-2px);
+ */                    background: rgba(99, 102, 241, 0.1);
+                    box-shadow: 0 5px 15px rgba(99, 102, 241, 0.2);
+                }
+
+                .navbar-nav .nav-link::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+                    border-radius: 25px;
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                    z-index: -1;
+                }
+
+                .navbar-nav .nav-link:hover::before,
+                .navbar-nav .nav-link.active::before {
+                    opacity: 0.1;
+                }
+
+                .navbar-nav .nav-link::after {
+                    content: '';
+                    position: absolute;
+                    bottom: -5px;
+                    left: 50%;
+                    width: 0;
+                    height: 2px;
+                    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+                    transition: all 0.3s ease;
+                    transform: translateX(-50%);
+                    border-radius: 1px;
+                }
+
+                .navbar-nav .nav-link:hover::after,
+                .navbar-nav .nav-link.active::after {
+                    width: 80%;
+                }
+
+        /* Enhanced navbar toggler */
+        .navbar-toggler {
+            border: 2px solid var(--primary-color);
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+            .navbar-toggler:hover {
+                background: rgba(99, 102, 241, 0.1);
+                transform: scale(1.1);
+            }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%236366f1' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        /* Dropdown enhancements */
+        .dropdown-menu {
+            background: var(--bg-card) !important;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            padding: 1rem 0;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown-item {
+            color: var(--text-secondary) !important;
+            padding: 0.7rem 1.5rem;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            margin: 0.2rem 0.5rem;
+        }
+
+            .dropdown-item:hover {
+                color: var(--text-primary) !important;
+                background: rgba(99, 102, 241, 0.2) !important;
+                transform: translateX(5px);
+            }
+
+            .dropdown-item i {
+                color: var(--primary-color);
+                margin-right: 0.5rem;
+            }
+
+        /* Main Content Enhancements */
+        main {
+            min-height: 100vh;
+            background: url("/images/VocaVerse5.png") no-repeat center center/cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 4rem 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+            main::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(15, 23, 42, 0.3);
+                z-index: 1;
+            }
+
+            main > * {
+                position: relative;
+                z-index: 2;
+            }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+            text-shadow: 0 0 50px rgba(99, 102, 241, 0.5);
+        }
+
+        @@keyframes titleGlow {
+            0%
+
+        {
+            filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.5));
+        }
+
+        100% {
+            filter: drop-shadow(0 0 40px rgba(139, 92, 246, 0.8));
+        }
+
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            margin-bottom: 3rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            letter-spacing: 2px;
+            animation: subtitleFade 2s ease-in-out;
+        }
+
+        @@keyframes subtitleFade {
+            0%
+
+        {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.2rem 3rem;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.4s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+            .cta-button::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+                transition: left 0.5s ease;
+            }
+
+            .cta-button:hover {
+                transform: translateY(-5px) scale(1.05);
+                box-shadow: 0 20px 50px rgba(99, 102, 241, 0.5);
+                color: white;
+            }
+
+                .cta-button:hover::before {
+                    left: 100%;
+                }
+
+            .cta-button:active {
+                transform: translateY(-2px) scale(1.02);
+            }
+
+        /* Footer Enhancements */
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem;
+            background: var(--bg-overlay);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+            footer a {
+                color: var(--text-secondary);
+                transition: all 0.3s ease;
+                padding: 0.5rem;
+                border-radius: 10px;
+            }
+
+                footer a:hover {
+                    color: var(--primary-color);
+                    transform: translateY(-3px) scale(1.2);
+                    background: rgba(99, 102, 241, 0.1);
+                }
+
+        /* Mobile Responsive */
+        @@media (max-width: 768px) {
+            .navbar-nav .nav-link
+
+        {
+            margin: 0.2rem 0;
+            text-align: center;
+        }
+
+        main {
+            padding: 2rem 1rem;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .cta-button {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+        }
+
+        footer {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .floating-elements {
+            display: none;
+        }
+
+        }
+
+        /* Loading Animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease;
+        }
+
+            .fade-in.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        /* Particle effect */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            z-index: 1001;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Scroll Progress Indicator -->
+    <div class="scroll-indicator" id="scrollIndicator"></div>
+
+    <!-- Floating Background Elements -->
+    <div class="floating-elements">
+        <div class="floating-word" style="left: 10%; animation-delay: 0s;">Voca</div>
+        <div class="floating-word" style="left: 70%; animation-delay: 5s;">Verse</div>
+        <div class="floating-word" style="left: 30%; animation-delay: 10s;">Names</div>
+        <div class="floating-word" style="left: 80%; animation-delay: 15s;">Play</div>
+        <div class="floating-word" style="left: 50%; animation-delay: 18s;">Words</div>
+    </div>
+
+    <!-- Enhanced Navigation -->
+    <nav class="navbar navbar-expand-lg" id="mainNavbar">
+        <div class="container-fluid">
+            <a class="navbar-brand fade-in" href="/">
+                <div class="logo-icon">🌌</div>
+                <span>VocaVerse</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active fade-in" href="/" style="animation-delay: 0.1s">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fade-in" href="/news" style="animation-delay: 0.2s">
+                            <i class="fas fa-newspaper me-1"></i>News
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fade-in" href="/Game" style="animation-delay: 0.3s">
+                            <i class="fas fa-gamepad me-1"></i>Game
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fade-in" href="/support" style="animation-delay: 0.4s">
+                            <i class="fas fa-headset me-1"></i>Support
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle fade-in" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="animation-delay: 0.5s">
+                            <i class="fas fa-user me-1"></i>Profile
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-user-plus"></i>Add Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-download"></i>Downloads
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cog"></i>Settings
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider" style="border-color: rgba(255,255,255,0.2);"></li>
+                           @*  <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-sign-out-alt"></i>Logout
+                                </a>
+                            </li> *@
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="fade-in">
+        <h1 class="hero-title">VocaVerse</h1>
+        <p class="hero-subtitle">The Universe of Names.</p>
+        <a href="/Game" class="cta-button">
+            <i class="fas fa-play"></i>
+            START PLAYING NOW
+        </a>
+    </main>
+
+    <!-- Enhanced Footer -->
+    <footer class="fade-in">
+        <span>© 2025 VocaVerse | All Rights Reserved</span>
+        <div class="d-flex gap-3">
+            <a href="https://www.instagram.com/yourprofile" target="_blank" title="Instagram">
+                <i class="fab fa-instagram fs-4"></i>
+            </a>
+            <a href="https://www.linkedin.com/in/yourprofile" target="_blank" title="LinkedIn">
+                <i class="fab fa-linkedin fs-4"></i>
+            </a>
+            <a href="https://github.com/yourprofile" target="_blank" title="GitHub">
+                <i class="fab fa-github fs-4"></i>
+            </a>
+            <a href="#" target="_blank" title="Discord">
+                <i class="fab fa-discord fs-4"></i>
+            </a>
+        </div>
+    </footer>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // Initialize animations and effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fade in elements on load
+            setTimeout(() => {
+                document.querySelectorAll('.fade-in').forEach(element => {
+                    element.classList.add('visible');
+                });
+            }, 100);
+
+            // Navbar scroll effect
+            const navbar = document.getElementById('mainNavbar');
+            const scrollIndicator = document.getElementById('scrollIndicator');
+
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                const maxScroll = document.body.scrollHeight - window.innerHeight;
+                const scrollPercent = (scrolled / maxScroll) * 100;
+
+                scrollIndicator.style.width = scrollPercent + '%';
+
+                if (scrolled > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+
+            // Enhanced dropdown interactions
+            const dropdownItems = document.querySelectorAll('.dropdown-item');
+            dropdownItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(10px)';
+                });
+
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0)';
+                });
+            });
+
+            // CTA button ripple effect
+            const ctaButton = document.querySelector('.cta-button');
+            ctaButton.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+
+                ripple.style.position = 'absolute';
+                ripple.style.width = size + 'px';
+                ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                ripple.style.background = 'rgba(255, 255, 255, 0.5)';
+                ripple.style.borderRadius = '50%';
+                ripple.style.transform = 'scale(0)';
+                ripple.style.animation = 'ripple 0.6s linear';
+                ripple.style.pointerEvents = 'none';
+
+                this.appendChild(ripple);
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+
+            // Parallax effect for floating elements
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                const rate = scrolled * -0.5;
+
+                document.querySelectorAll('.floating-word').forEach((element, index) => {
+                    const speed = 0.1 + (index * 0.05);
+                    element.style.transform = `translateY(${rate * speed}px)`;
+                });
+            });
+
+            // Navigation link active state management
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === currentPath ||
+                    (currentPath === '/' && link.getAttribute('href') === '/') ||
+                    (currentPath.includes('/Home') && link.getAttribute('href') === '/')) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Smooth scrolling for internal links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+
+        // Ripple animation CSS
+        const rippleCSS = `
+        @@keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+
+        const style = document.createElement('style');
+        style.textContent = rippleCSS;
+        document.head.appendChild(style);
+
+        // Create floating particles
+        function createParticles() {
+            const canvas = document.createElement('canvas');
+            canvas.className = 'particles';
+            canvas.style.position = 'fixed';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.pointerEvents = 'none';
+            canvas.style.zIndex = '-1';
+            document.body.appendChild(canvas);
+
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.vx = (Math.random() - 0.5) * 0.3;
+                    this.vy = (Math.random() - 0.5) * 0.3;
+                    this.size = Math.random() * 1.5 + 0.5;
+                    this.opacity = Math.random() * 0.2 + 0.05;
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    if (this.x < 0) this.x = canvas.width;
+                    if (this.x > canvas.width) this.x = 0;
+                    if (this.y < 0) this.y = canvas.height;
+                    if (this.y > canvas.height) this.y = 0;
+                }
+
+                draw() {
+                    ctx.save();
+                    ctx.globalAlpha = this.opacity;
+                    ctx.fillStyle = '#6366f1';
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            for (let i = 0; i < 30; i++) {
+                particles.push(new Particle());
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+
+        setTimeout(createParticles, 1500);
+    </script>
+
+</body>
+</html>

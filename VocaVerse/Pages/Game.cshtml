@@ -1,0 +1,734 @@
+﻿@page
+@model VocaVerse.Pages.GameModel
+@{
+    Layout = null;
+    ViewData["Title"] = "VocaVerse - Word Chain Game";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
+            background: #0a0f1c;
+        }
+
+        header, footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: rgba(0,0,0,0.7);
+            position: sticky;
+            z-index: 100;
+        }
+
+        main {
+            min-height: 100vh;
+            background: url("/images/VocaVerse5.png") no-repeat center center/cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .game-card {
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(8px);
+            border-radius: 2rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            width: 100%;
+            max-width: 900px;
+            color: white;
+            position: relative;
+        }
+
+        .name-badge {
+            background: rgba(255,255,255,0.2);
+            text-align: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            font-weight: 500;
+        }
+
+        #restartBtn {
+            background: linear-gradient(90deg, #ff416c, #ff4b2b);
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+            #restartBtn:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            }
+
+        #timer {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        #rulesBtn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            #rulesBtn:hover {
+                background: rgba(255,255,255,0.2);
+            }
+
+        .rules-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.75);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .rules-content {
+            background: rgba(0,0,0,0.85);
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 500px;
+            color: white;
+            position: relative;
+        }
+
+        .rules-close {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #ff4b2b;
+        }
+
+        #failPopup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.75);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .fail-content {
+            background: rgba(255,0,0,0.9);
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 400px;
+            color: white;
+            text-align: center;
+        }
+
+            .fail-content button {
+                background: linear-gradient(90deg, #ff416c, #ff4b2b);
+                border: none;
+                padding: 0.5rem 1.5rem;
+                border-radius: 30px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                color: white;
+            }
+
+                .fail-content button:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+                }
+
+
+        .player-modal {
+            background: rgba(20, 20, 35, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            color: #fff;
+            animation: scaleIn 0.4s ease;
+        }
+
+            .player-modal .modal-title {
+                font-size: 1.5rem;
+                font-weight: bold;
+                background: linear-gradient(45deg, #00f2fe, #4facfe);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                letter-spacing: 1px;
+            }
+
+        .modern-input {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 10px;
+            padding: 12px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: transparent;
+        }
+
+            .modern-input.form-control {
+                color: #fff !important;
+            }
+
+            .modern-input:focus {
+                background: rgba(255, 255, 255, 0.12);
+                border-color: #4facfe;
+                box-shadow: 0 0 8px rgba(79,172,254,0.7);
+                outline: none;
+            }
+
+            .modern-input::placeholder {
+                color: rgba(255, 255, 255, 0.7);
+            }
+
+
+        .start-btn {
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 12px;
+            color: #fff;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+            .start-btn:hover {
+                transform: translateY(-2px) scale(1.02);
+                box-shadow: 0 6px 15px rgba(0,114,255,0.4);
+            }
+
+        .new-game-btn {
+            background: linear-gradient(135deg, #ff6a00, #ee0979);
+            border: none;
+            border-radius: 14px;
+            padding: 12px 28px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 12px rgba(238,9,121,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+            .new-game-btn:hover {
+                transform: translateY(-3px) scale(1.03);
+                box-shadow: 0 8px 20px rgba(238,9,121,0.6);
+            }
+
+            .new-game-btn::after {
+                content: "";
+                position: absolute;
+                width: 0;
+                height: 0;
+                top: 50%;
+                left: 50%;
+                background: rgba(255,255,255,0.3);
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+                transition: width 0.4s ease, height 0.4s ease, opacity 0.5s ease;
+                opacity: 0;
+            }
+
+            .new-game-btn:active::after {
+                width: 300%;
+                height: 300%;
+                opacity: 0;
+            }
+
+        .navbar-nav {
+            align-items: center;
+        }
+
+            .navbar-nav .nav-link {
+                color: var(--text-secondary) !important;
+                font-weight: 500;
+                margin: 0 0.8rem;
+                transition: all 0.3s ease;
+                position: relative;
+                padding: 0.5rem 1rem;
+                border-radius: 25px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                font-size: 0.9rem;
+            }
+
+                .navbar-nav .nav-link:hover,
+                .navbar-nav .nav-link.active {
+                    color: var(--primary-color) !important;
+                    /*                     transform: translateY(-2px);
+         */ background: rgba(99, 102, 241, 0.1);
+                    box-shadow: 0 5px 15px rgba(99, 102, 241, 0.2);
+                }
+
+                .navbar-nav .nav-link::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+                    border-radius: 25px;
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                    z-index: -1;
+                }
+
+                .navbar-nav .nav-link:hover::before,
+                .navbar-nav .nav-link.active::before {
+                    opacity: 0.1;
+                }
+
+                .navbar-nav .nav-link::after {
+                    content: '';
+                    position: absolute;
+                    bottom: -5px;
+                    left: 50%;
+                    width: 0;
+                    height: 2px;
+                    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+                    transition: all 0.3s ease;
+                    transform: translateX(-50%);
+                    border-radius: 1px;
+                }
+
+                .navbar-nav .nav-link:hover::after,
+                .navbar-nav .nav-link.active::after {
+                    width: 80%;
+                }
+
+        /* Enhanced navbar toggler */
+        .navbar-toggler {
+            border: 2px solid var(--primary-color);
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+            .navbar-toggler:hover {
+                background: rgba(99, 102, 241, 0.1);
+                transform: scale(1.1);
+            }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%236366f1' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        @@keyframes scaleIn {
+            0%
+
+        {
+            transform: scale(0.85);
+            opacity: 0;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        }
+
+        @@media (max-width:768px) {
+            main
+
+        {
+            padding: 2rem 1rem;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                <div class="logo-icon flex-shrink-0">🌌</div>
+                <span class="text-white fw-bold fs-5">VocaVerse</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link fade-in" href="/Index" style="animation-delay: 0.1s">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/news">
+                            <i class="fas fa-newspaper me-1"></i>News
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fade-in" href="/Game" style="animation-delay: 0.3s">
+                            <i class="fas fa-gamepad me-1"></i>Game
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="fas fa-headset me-1"></i>Support
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="game-card">
+            <button id="rulesBtn" title="Show Rules"><i class="bi bi-info-circle"></i></button>
+            <h1 class="mb-3">🔗 Word Chain Game</h1>
+            <p class="mb-2">Two-player Indian names game</p>
+
+            <div id="timer"><i class="bi bi-clock"></i> <span id="timerValue">30</span>s</div>
+            <div class="d-flex justify-content-between mb-2">
+                <span>Current Player:</span>
+                <span id="currentPlayer">@Model.CurrentPlayer</span>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+                <span>Last Name:</span>
+                <span id="lastName">@Model.LastName ?? "None yet"</span>
+            </div>
+
+            <div id="messageBox" class="mb-3" style="background: rgba(255,255,255,0.1); padding: 0.5rem; border-radius: 0.5rem;">
+                <span id="gameMessage">@Model.Message</span>
+            </div>
+
+            <form id="gameForm" class="mb-3">
+                <div class="d-flex gap-2">
+                    <input type="text" id="nameInput" maxlength="10" placeholder="Enter 5-letter Indian name" class="form-control" autocomplete="off" />
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+
+            <div class="d-flex justify-content-between mt-3">
+                <button id="restartBtn">Restart Game</button>
+                <button id="newGameBtn" class="new-game-btn">
+                     New Game
+                </button>                
+                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#usedNamesModal">
+                    <i class="bi bi-list-ul"></i> Used Names
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal fade" id="playerModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content player-modal">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title w-100 text-center">🎮</h5>
+                    <a href="/" class="btn btn-danger position-absolute top-0 end-0 m-2" title="Quit Game">✖</a>
+                </div>
+                <div class="modal-body">
+                    <form id="playerForm">
+                        <div class="mb-3">
+                            <label class="form-label">👤 Player 1</label>
+                            <input type="text" id="player1Input" class="form-control modern-input" placeholder="Enter Player 1 Name" autocomplete="off" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">👤 Player 2</label>
+                            <input type="text" id="player2Input" class="form-control modern-input" placeholder="Enter Player 2 Name" autocomplete="off" required>
+                        </div>
+                        <button type="submit" class="btn start-btn w-100">Start Game</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="usedNamesModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                    <h5 class="modal-title">Used Names (<span id="usedCountPopup">0</span>)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="usedNamesContainerPopup" class="d-grid gap-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="rulesPopup" class="rules-popup">
+        <div class="rules-content">
+            <span id="rulesClose" class="rules-close">&times;</span>
+            <h3>📋 Game Rules</h3>
+            <ol>
+                <li>Players take turns entering 5-letter Indian names.</li>
+                <li>Each new name must start with the last letter of the previous name.</li>
+                <li>Each name can only be used once per game.</li>
+                <li>Use valid Indian names for play.</li>
+                <li>Each player has 30 seconds to enter a name, else they fail.</li>
+            </ol>
+        </div>
+    </div>
+
+    <div id="failPopup">
+        <div class="fail-content">
+            <h2> Move Failed!</h2>
+            <p id="failReason"></p>
+            <button id="failRestartBtn">Restart Game</button>
+        </div>
+    </div>
+
+    <footer><span>© 2025 VocaVerse | All Rights Reserved</span></footer>
+
+    <script>
+        // ---- state ----
+        let gameState = { currentPlayer: "", lastName: null, usedNames: [], message: "" };
+        let players = { p1: "", p2: "" };
+        let playersRegistered = false; // <- important guard
+        let timer;
+        const timeLimit = 30;
+        let remainingTime = timeLimit;
+        let initialMove = true;
+
+        // ---- elements ----
+        const playerModalEl = document.getElementById('playerModal');
+        const playerModal = new bootstrap.Modal(playerModalEl, { backdrop: 'static', keyboard: false });
+
+        const currentPlayerSpan = document.getElementById('currentPlayer');
+        const lastNameSpan = document.getElementById('lastName');
+        const usedCountPopup = document.getElementById('usedCountPopup');
+        const usedNamesContainerPopup = document.getElementById('usedNamesContainerPopup');
+        const gameForm = document.getElementById('gameForm');
+        const nameInput = document.getElementById('nameInput');
+        const gameMessage = document.getElementById('gameMessage');
+        const timerValue = document.getElementById('timerValue');
+        const restartBtn = document.getElementById('restartBtn');
+        const newGameBtn = document.getElementById('newGameBtn');
+        const failPopup = document.getElementById('failPopup');
+        const failReason = document.getElementById('failReason');
+        const failRestartBtn = document.getElementById('failRestartBtn');
+        const rulesBtn = document.getElementById('rulesBtn');
+        const rulesPopup = document.getElementById('rulesPopup');
+        const rulesClose = document.getElementById('rulesClose');
+
+        // disable main name input and submit until players registered
+        function enableGameInputs(enable) {
+            nameInput.disabled = !enable;
+            const submitBtn = gameForm.querySelector('button[type="submit"]');
+            if (submitBtn) submitBtn.disabled = !enable;
+        }
+
+        // initial disable
+        enableGameInputs(false);
+
+        function updateUI() {
+            currentPlayerSpan.textContent = gameState.currentPlayer || "Waiting...";
+            lastNameSpan.textContent = gameState.lastName || "None yet";
+            usedCountPopup.textContent = gameState.usedNames.length;
+            usedNamesContainerPopup.innerHTML = gameState.usedNames.length ?
+                gameState.usedNames.map(n => `<div class="name-badge">${n}</div>`).join('') :
+                '<p class="text-center">No names used yet</p>';
+            gameMessage.textContent = gameState.message;
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            remainingTime = timeLimit;
+            timerValue.textContent = remainingTime;
+            timer = setInterval(() => {
+                remainingTime--;
+                timerValue.textContent = remainingTime;
+                if (remainingTime <= 0) {
+                    clearInterval(timer);
+                    showFail(`${gameState.currentPlayer} failed to enter name in 30 seconds!`);
+                }
+            }, 1000);
+        }
+
+        function showFail(reason) {
+            failReason.textContent = reason;
+            failPopup.style.display = 'flex';
+        }
+
+        function restartGame() {
+            // keep players but reset game state
+            gameState = { currentPlayer: players.p1 || "", lastName: null, usedNames: [], message: "" };
+            initialMove = true;
+            updateUI();
+            failPopup.style.display = 'none';
+            enableGameInputs(!!playersRegistered);
+        }
+
+        function clearUIAndInputs() {
+            document.getElementById("player1Input").value = "";
+            document.getElementById("player2Input").value = "";
+            nameInput.value = "";
+            currentPlayerSpan.textContent = "Waiting...";
+            lastNameSpan.textContent = "None yet";
+            gameMessage.textContent = "";
+            usedCountPopup.textContent = "0";
+            usedNamesContainerPopup.innerHTML = '<p class="text-center">No names used yet</p>';
+            timerValue.textContent = timeLimit;
+            failPopup.style.display = "none";
+        }
+
+        function newGame() {
+            // require re-registration on new game
+            players = { p1: "", p2: "" };
+            playersRegistered = false;
+            gameState = { currentPlayer: "", lastName: null, usedNames: [], message: "" };
+            initialMove = true;
+            updateUI();
+            clearUIAndInputs();
+            enableGameInputs(false);
+            playerModal.show(); // static modal — can't dismiss by clicking backdrop
+        }
+
+        // Utility: sanitize and allow only letters/spaces for player name inputs
+        const sanitizePlayerInput = (value) => value.replace(/[^A-Za-z\s]/g, '');
+
+        // player inputs live-sanitization (uppercase optional)
+        const player1InputEl = document.getElementById("player1Input");
+        const player2InputEl = document.getElementById("player2Input");
+        player1InputEl.addEventListener('input', (e) => {
+            const cleaned = sanitizePlayerInput(e.target.value);
+            e.target.value = cleaned; // keep case as user types; you can .toUpperCase() if desired
+        });
+        player2InputEl.addEventListener('input', (e) => {
+            const cleaned = sanitizePlayerInput(e.target.value);
+            e.target.value = cleaned;
+        });
+
+        // Player form submission -> validate and register players
+        document.getElementById("playerForm").addEventListener("submit", e => {
+            e.preventDefault();
+            const p1 = document.getElementById("player1Input").value.trim();
+            const p2 = document.getElementById("player2Input").value.trim();
+
+            // validation: not empty and only letters/spaces
+            const nameRegex = /^[A-Za-z\s]+$/;
+
+            if (!p1 || !p2) {
+                showFail("Please enter both player names before starting!");
+                return;
+            }
+            if (!nameRegex.test(p1) || !nameRegex.test(p2)) {
+                showFail("Player names must contain letters only (spaces allowed).");
+                return;
+            }
+
+            players.p1 = p1;
+            players.p2 = p2;
+            playersRegistered = true;
+            gameState.currentPlayer = players.p1;
+            updateUI();
+            enableGameInputs(true);
+            // hide modal (programmatic hide is allowed)
+            playerModal.hide();
+        });
+
+        // GAME form submission -> guard registration and validate game name
+        gameForm.addEventListener('submit', function(e){
+            e.preventDefault();
+
+            if (!playersRegistered) {
+                showFail("Please register Player 1 and Player 2 before playing!");
+                playerModal.show();
+                return;
+            }
+
+            let name = nameInput.value.trim().toUpperCase();
+            if(!name || name.length !== 5){ showFail("Enter a valid 5-letter name!"); return; }
+            if(gameState.lastName && name[0] !== gameState.lastName.slice(-1)){
+                showFail(`Name must start with '${gameState.lastName.slice(-1)}'`); return;
+            }
+            if(gameState.usedNames.includes(name)){ showFail("This name has already been used!"); return; }
+
+            gameState.usedNames.push(name);
+            gameState.lastName = name;
+            gameState.currentPlayer = gameState.currentPlayer === players.p1 ? players.p2 : players.p1;
+            gameState.message = "Great move!";
+            updateUI();
+            nameInput.value = "";
+            nameInput.focus();
+
+            // Timer/initial move logic: skip timer for the very first move
+            if (initialMove) {
+                initialMove = false;
+                // do NOT start timer now (Player 1 already moved)
+            } else {
+                startTimer();
+            }
+        });
+
+        // sanitize main name input (letters only allowed in this form? original asked uppercase A-Z)
+        nameInput.addEventListener('input', function(){
+            this.value = this.value.toUpperCase().replace(/[^A-Z]/g,'');
+        });
+
+        restartBtn.addEventListener('click', restartGame);
+        newGameBtn.addEventListener('click', newGame);
+        failRestartBtn.addEventListener('click', restartGame);
+
+        rulesBtn.addEventListener('click', () => rulesPopup.style.display = 'flex');
+        rulesClose.addEventListener('click', () => rulesPopup.style.display = 'none');
+        rulesPopup.addEventListener('click', e => { if(e.target === rulesPopup) rulesPopup.style.display = 'none'; });
+
+        // show player modal on load (force static modal)
+        window.addEventListener("load", () => {
+            playerModal.show();
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+# Ignore build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio cache/options
+.vs/
+.vscode/
+
+# Build logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Publish output
+publish/
